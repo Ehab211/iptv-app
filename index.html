@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IPTV App</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-  <div id="login-screen" class="screen">
-    <input type="text" id="url" placeholder="M3U URL or Server URL" class="focusable">
-    <input type="text" id="username" placeholder="Username (for Xtream Codes)" class="focusable">
-    <input type="password" id="password" placeholder="Password (for Xtream Codes)" class="focusable">
-    <button id="login-btn" class="focusable">Login</button>
-  </div>
-  <div id="channel-screen" class="screen hidden">
-    <div id="channel-list"></div>
-    <video id="player" controls class="hidden"></video>
-  </div>
-  <script src="app.js"></script>
+    <div id="login-screen">
+        <input type="text" id="url" placeholder="M3U URL or Server URL" class="focusable">
+        <input type="text" id="username" placeholder="Username (Xtream Codes)" class="focusable">
+        <input type="password" id="password" placeholder="Password (Xtream Codes)" class="focusable">
+        <button id="login-btn">Login</button>
+    </div>
+    <div id="channel-screen" class="hidden">
+        <div id="channel-list"></div>
+        <video id="player" class="hidden" controls></video>
+    </div>
+    <div id="error-overlay" class="hidden">
+        <p id="error-message"></p>
+        <button id="error-ok">OK</button>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
