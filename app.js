@@ -95,18 +95,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Fetch and parse M3U playlist
 async function fetchM3U(url) {
-  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+  const proxyUrl = 'https://api.allorigins.win/get?url=';
   try {
-    const response = await fetch(proxyUrl + url, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
+    const response = await fetch(proxyUrl + encodeURIComponent(url));
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to fetch M3U playlist: ${response.status} - ${errorText}`);
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch M3U playlist: ${response.status} - ${errorData.contents}`);
     }
-    const text = await response.text();
+    const data = await response.json();
+    const text = data.contents;
     const lines = text.split('\n');
     const result = [];
     for (let i = 0; i < lines.length; i++) {
@@ -125,18 +122,15 @@ async function fetchM3U(url) {
 
 // Fetch Xtream Codes channel list
 async function fetchXtreamCodes(server, username, password) {
-  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+  const proxyUrl = 'https://api.allorigins.win/get?url=';
   try {
-    const response = await fetch(proxyUrl + `${server}/player_api.php?username=${username}&password=${password}&action=get_live_streams`, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
+    const response = await fetch(proxyUrl + encodeURIComponent(`${server}/player_api.php?username=${username}&password=${password}&action=get_live_streams`));
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to fetch Xtream Codes channels: ${response.status} - ${errorText}`);
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch Xtream Codes channels: ${response.status} - ${errorData.contents}`);
     }
-    const streams = await response.json();
+    const data = await response.json();
+    const streams = JSON.parse(data.contents);
     return streams.map(s => ({
       id: s.stream_id,
       name: s.name,
