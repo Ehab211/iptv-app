@@ -79,7 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (url.endsWith('.m3u') || url.includes('type=m3u') || url.includes('type=m3u_plus') || url.includes('.m3u8')) {
         channels = await fetchM3U(url);
       } else if (username && password) {
-        channels = await fetchXtreamCodes(url, username, password);
+        // Try M3U URL first
+        const m3uUrl = `${url}/get.php?username=${username}&password=${password}&type=m3u_plus`;
+        try {
+          channels = await fetchM3U(m3uUrl);
+        } catch (m3uError) {
+          console.warn('M3U fetch failed, trying Xtream Codes:', m3uError.message);
+          channels = await fetchXtreamCodes(url, username, password);
+        }
       } else {
         throw new Error('Please provide valid M3U URL or Xtream Codes credentials (username and password)');
       }
