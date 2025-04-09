@@ -97,20 +97,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Fetch and parse M3U playlist
 async function fetchM3U(url) {
-  const proxyUrl = 'https://api.allorigins.win/get?url=';
+  const proxyUrl = 'https://proxy.cors.sh/';
   try {
-    const response = await fetch(proxyUrl + encodeURIComponent(url), {
+    const response = await fetch(proxyUrl + url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'x-cors-api-key': 'temp_1c76044f4f1bdc56fad8177c24ca11c2', // Replace with your actual API key from cors.sh
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
         'Referer': 'https://ehab211.github.io/iptv-app/'
       }
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Failed to fetch M3U playlist: ${response.status} - ${errorData.contents}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch M3U playlist: ${response.status} - ${errorText}`);
     }
-    const data = await response.json();
-    const text = data.contents;
+    const text = await response.text();
     const lines = text.split('\n');
     const result = [];
     for (let i = 0; i < lines.length; i++) {
