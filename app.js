@@ -79,16 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (url.endsWith('.m3u') || url.includes('type=m3u') || url.includes('type=m3u_plus') || url.includes('.m3u8')) {
         channels = await fetchM3U(url);
       } else if (username && password) {
-        // Try M3U URL first
+        // Use M3U URL for servers with username and password
         const m3uUrl = `${url}/get.php?username=${username}&password=${password}&type=m3u_plus`;
-        try {
-          channels = await fetchM3U(m3uUrl);
-        } catch (m3uError) {
-          console.warn('M3U fetch failed, trying Xtream Codes:', m3uError.message);
-          channels = await fetchXtreamCodes(url, username, password);
-        }
+        channels = await fetchM3U(m3uUrl);
       } else {
-        throw new Error('Please provide valid M3U URL or Xtream Codes credentials (username and password)');
+        throw new Error('Please provide a valid M3U URL or credentials (username and password)');
       }
       renderChannels();
       loginScreen.classList.add('hidden');
@@ -102,20 +97,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Fetch and parse M3U playlist
 async function fetchM3U(url) {
-  const proxyUrl = 'https://proxy.cors.sh/';
+  const proxyUrl = 'https://api.allorigins.win/get?url=';
   try {
-    const response = await fetch(proxyUrl + url, {
+    const response = await fetch(proxyUrl + encodeURIComponent(url), {
       headers: {
-        'x-cors-api-key': 'temp_your_api_key', // Replace with your API key from cors.sh
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'Referer': 'https://ehab211.github.io/iptv-app/'
       }
     });
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to fetch M3U playlist: ${response.status} - ${errorText}`);
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch M3U playlist: ${response.status} - ${errorData.contents}`);
     }
-    const text = await response.text();
+    const data = await response.json();
+    const text = data.contents;
     const lines = text.split('\n');
     const result = [];
     for (let i = 0; i < lines.length; i++) {
@@ -129,32 +124,6 @@ async function fetchM3U(url) {
     return result;
   } catch (error) {
     throw new Error(`Network error while fetching M3U playlist: ${error.message}`);
-  }
-}
-
-// Fetch Xtream Codes channel list
-async function fetchXtreamCodes(server, username, password) {
-  const proxyUrl = 'https://proxy.cors.sh/';
-  try {
-    const response = await fetch(proxyUrl + `${server}/player_api.php?username=${username}&password=${password}&action=get_live_streams`, {
-      headers: {
-        'x-cors-api-key': 'temp_your_api_key', // Replace with your API key from cors.sh
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Referer': 'https://ehab211.github.io/iptv-app/'
-      }
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to fetch Xtream Codes channels: ${response.status} - ${errorText}`);
-    }
-    const streams = await response.json();
-    return streams.map(s => ({
-      id: s.stream_id,
-      name: s.name,
-      url: `${server}/live/${username}/${password}/${s.stream_id}.ts`
-    }));
-  } catch (error) {
-    throw new Error(`Network error while fetching Xtream Codes channels: ${error.message}`);
   }
 }
 
