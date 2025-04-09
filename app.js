@@ -166,3 +166,4 @@ function playChannel(url) {
     player.play();
   }
 }
+});
