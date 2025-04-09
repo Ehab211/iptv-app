@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginBtn = document.getElementById('login-btn');
   const focusables = Array.from(document.querySelectorAll('.focusable'));
 
+  // Check if elements exist before proceeding
+  if (!loginScreen || !channelScreen || !errorOverlay || !errorMessage || !errorOk || !loginBtn) {
+    console.error('Required DOM elements are missing. Check your index.html file.');
+    return;
+  }
+
   // Set initial focus
   loginBtn.focus();
 
