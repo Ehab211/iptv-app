@@ -66,37 +66,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Login button click
-loginBtn.addEventListener('click', async () => {
-  const url = document.getElementById('url').value;
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
+  loginBtn.addEventListener('click', async () => {
+    const url = document.getElementById('url').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-  try {
-    if (!url) {
-      throw new Error('Please provide a URL');
+    try {
+      if (!url) {
+        throw new Error('Please provide a URL');
+      }
+      // Check if the URL is for an M3U playlist
+      if (url.endsWith('.m3u') || url.includes('type=m3u') || url.includes('type=m3u_plus') || url.includes('.m3u8')) {
+        channels = await fetchM3U(url);
+      } else if (username && password) {
+        // Use M3U URL for servers with username and password
+        const m3uUrl = `${url}/get.php?username=${username}&password=${password}&type=m3u_plus`;
+        channels = await fetchM3U(m3uUrl);
+      } else {
+        throw new Error('Please provide a valid M3U URL or credentials (username and password)');
+      }
+      renderChannels();
+      loginScreen.classList.add('hidden');
+      channelScreen.classList.remove('hidden');
+      const firstChannel = document.querySelector('.channel');
+      if (firstChannel) {
+        firstChannel.focus();
+      } else {
+        console.warn('No channels to focus on');
+      }
+    } catch (error) {
+      showError('Error: ' + error.message);
     }
-    // Check if the URL is for an M3U playlist
-    if (url.endsWith('.m3u') || url.includes('type=m3u') || url.includes('type=m3u_plus') || url.includes('.m3u8')) {
-      channels = await fetchM3U(url);
-    } else if (username && password) {
-      // Use M3U URL for servers with username and password
-      const m3uUrl = `${url}/get.php?username=${username}&password=${password}&type=m3u_plus`;
-      channels = await fetchM3U(m3uUrl);
-    } else {
-      throw new Error('Please provide a valid M3U URL or credentials (username and password)');
-    }
-    renderChannels();
-    loginScreen.classList.add('hidden');
-    channelScreen.classList.remove('hidden');
-    const firstChannel = document.querySelector('.channel');
-    if (firstChannel) {
-      firstChannel.focus();
-    } else {
-      console.warn('No channels to focus on');
-    }
-  } catch (error) {
-    showError('Error: ' + error.message);
-  }
+  });
 });
 
 // Fetch and parse M3U playlist
@@ -166,4 +167,3 @@ function playChannel(url) {
     player.play();
   }
 }
-});
