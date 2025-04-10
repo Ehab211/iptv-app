@@ -121,10 +121,6 @@ async function fetchM3U(url) {
         i++;
       }
     }
-    console.log('Parsed Channels:', result); // Log the parsed channels
-    if (result.length === 0) {
-      throw new Error('No channels found in the M3U playlist');
-    }
     return result;
   } catch (error) {
     throw new Error(`Network error while fetching M3U playlist: ${error.message}`);
