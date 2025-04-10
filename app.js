@@ -88,12 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderChannels();
       loginScreen.classList.add('hidden');
       channelScreen.classList.remove('hidden');
-      const firstChannel = document.querySelector('.channel');
-      if (firstChannel) {
-        firstChannel.focus();
-      } else {
-        console.warn('No channels to focus on');
-      }
+      document.querySelector('.channel').focus();
     } catch (error) {
       showError('Error: ' + error.message);
     }
